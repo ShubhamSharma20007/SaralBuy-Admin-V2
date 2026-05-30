@@ -59,7 +59,7 @@ function ProtectedRoute({ children }: any) {
   if (checking || loading)
     return (
       <div className="h-screen w-full flex items-center justify-center">
-        <p>Checking authentication...</p>
+        <p>Loading...</p>
       </div>
     );
 

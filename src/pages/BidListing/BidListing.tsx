@@ -54,6 +54,8 @@ const BidListing = () => {
     e.preventDefault();
     const searchTerm = e.target[0].value;
     setText(searchTerm);
+    setPage(1)
+    
   }
 
   function showProductBids(productObj: any) {

@@ -100,7 +100,7 @@ export default function MonthlySalesChart({ data }: Props) {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           Category Product's
         </h3>
-        <div className="relative inline-block">
+        {/* <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
           </button>
@@ -118,7 +118,7 @@ export default function MonthlySalesChart({ data }: Props) {
               Delete
             </DropdownItem>
           </Dropdown>
-        </div>
+        </div> */}
       </div>
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">

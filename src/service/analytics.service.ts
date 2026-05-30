@@ -15,7 +15,7 @@ class Analytics {
   }
   async bannerImageUpload(formData: FormData) {
     return await axiosInstance
-      .post('/dashboard/upload-banner', formData, {
+      .post('/banner', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
