@@ -29,15 +29,16 @@ import { AuthServiceInstance } from './service/auth.service';
 import { useFetch } from './hooks/useFetch';
 
 import UserPersmission from './pages/UserPermission/UserPersmission';
-import BannerBucket from './pages/S3Bucket/BannerBucket';
-import BannerListing from './pages/S3Bucket/BannerListing';
-import AllProducts from './pages/AllProduct/AllProducts';
-import BidListing from './pages/BidListing/BidListing';
+
 import BidListingByProduct from './pages/BidListing/BidListingByProduct';
 import Requirement from './pages/Requirement/Requirement';
 import RequirementById from './pages/Requirement/RequirementById';
 
 const Home = lazy(() => import('./pages/Dashboard/Home'));
+const BannerBucket = lazy(() => import('./pages/S3Bucket/BannerBucket'));
+const BannerListing = lazy(() => import('./pages/S3Bucket/BannerListing'));
+const AllProducts = lazy(() => import('./pages/AllProduct/AllProducts'));
+const BidListing = lazy(() => import('./pages/BidListing/BidListing'));
 
 function ProtectedRoute({ children }: any) {
   const { user, setUser } = useContext(UserContext)!;

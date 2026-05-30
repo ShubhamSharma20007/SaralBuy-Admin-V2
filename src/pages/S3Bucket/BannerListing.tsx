@@ -10,6 +10,15 @@ import { toast } from 'sonner';
 import Label from '../../components/form/Label';
 import FileInput from '../../components/form/input/FileInput';
 import Input from '../../components/form/input/InputField';
+import {
+  SelectContent,
+  Select,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const BannerListing = () => {
   const { fn, data } = useFetch(AnalyticsInstance.bannerListing);
@@ -40,6 +49,8 @@ const BannerListing = () => {
     title: '',
     linkUrl: '',
     imageUrl: '',
+    endPoint:'',
+    domain:''
   });
   const end = Math.min(page * limit, totalBanners);
   useEffect(() => {
@@ -112,21 +123,26 @@ const BannerListing = () => {
     if (getBannerDetsRes) {
       setUpdateForm({
         title: getBannerDetsRes?.title,
-        imageUrl: getBannerDetsRes.imageKey.split('/').at(-1),
+        imageUrl: getBannerDetsRes.linkUrl,
         linkUrl: getBannerDetsRes?.linkUrl,
+        endPoint:getBannerDetsRes?.endPoint,
+        domain:getBannerDetsRes?.domain
       });
     }
   }, [getBannerDetsRes]);
 
   async function handleUpdateBannerForm(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(updateForm);
     const formData = new FormData();
     formData.append('title', updateForm.title);
     formData.append('linkUrl', updateForm.linkUrl);
+    formData.append('endPoint', updateForm.endPoint);
+    formData.append('domain', updateForm.domain);
+    console.log(file)
     if (file) {
       formData.append('image', file);
     }
+
     await updateBanner(formData, updateFormId);
   }
   useEffect(() => {
@@ -138,6 +154,8 @@ const BannerListing = () => {
         title: '',
         imageUrl: '',
         linkUrl: '',
+        endPoint:'',
+        domain:''
       });
       console.log(data);
       data.banners = data.banners.map((item: any) => {
@@ -252,7 +270,7 @@ const BannerListing = () => {
                         />
                       </div>
 
-                      <div>
+                      {/* <div>
                         <Label htmlFor="inputTwo2" className="text-white">
                           Redirect URL
                         </Label>
@@ -264,7 +282,35 @@ const BannerListing = () => {
                           className="text-white"
                           onChange={e => setUpdateForm({ ...updateForm, linkUrl: e.target.value })}
                         />
-                      </div>
+                      </div> */}
+
+                      <div className="flex justify-between items-center gap-2">
+                                  <Input
+                                    type="url"
+                                    disabled
+                                    className="custom-class w-full"
+                                    name="target_link"
+                                    value={updateForm.domain+updateForm.endPoint}
+                                    placeholder="Redirect Link...)"
+                                  />
+                                  <Select value={updateForm.endPoint} onValueChange={(e)=>setUpdateForm({...updateForm, endPoint: e})}>
+                                    <SelectTrigger className="w-full max-w-42" name='endpoint'>
+                                      <SelectValue placeholder="Select Endpoint" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                   
+                                        <SelectItem value="/">Home</SelectItem>
+                                        <SelectItem value="/requirements">Requirement</SelectItem>
+                                        <SelectItem value="/account">Profile</SelectItem>
+                                        <SelectItem value="/account/cart">Cart</SelectItem>
+                                        <SelectItem value="/account/requirements">Posted/Draft</SelectItem>
+                                        <SelectItem value="/account/deal">Close Deal</SelectItem>
+                                        <SelectItem value="/account/notification">Notification</SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
 
                       <div className="bg-gray-700/25 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <button

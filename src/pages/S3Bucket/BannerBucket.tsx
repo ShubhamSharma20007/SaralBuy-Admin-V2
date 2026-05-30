@@ -70,6 +70,8 @@ const BannerBucket = () => {
   formData.append('title', title);
   formData.append('linkUrl', target_link);
   formData.append('buttonText', buttonText);
+  formData.append('domain',import.meta.env.VITE_CLIENT_URL)
+  formData.append('endPoint', endpoint);
 
 
   await fn(formData);

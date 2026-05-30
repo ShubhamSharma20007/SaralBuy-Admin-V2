@@ -24,7 +24,7 @@ class Analytics {
   }
   async bannerListing(limit: string, page: string) {
     return await axiosInstance
-      .get('/dashboard/banner-listing', {
+      .get('/banner', {
         params: {
           limit,
           page,
@@ -34,17 +34,17 @@ class Analytics {
   }
   async deleteBanner(bannerId: string) {
     return await axiosInstance
-      .delete('/dashboard/delete-banner/' + bannerId)
+      .delete('/banner/delete-banner/' + bannerId)
       .then(res => res.data.data || res.data);
   }
   async getBanerDetailsById(bannerId: string) {
     return await axiosInstance
-      .get('/dashboard/get-banner/' + bannerId)
+      .get('/banner/get-banner/' + bannerId)
       .then(res => res.data.data || res.data);
   }
   async updateBanner(formData: FormData, bannerId: string) {
     return await axiosInstance
-      .put('/dashboard/update-banner/' + bannerId, formData, {
+      .put('/banner/' + bannerId, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
