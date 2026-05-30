@@ -1,9 +1,9 @@
-const SpinnerLoader = () => {
+const Loader = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="32"
+      height="32"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -21,6 +21,14 @@ const SpinnerLoader = () => {
       <path d="M2 12h4" />
       <path d="m4.9 4.9 2.9 2.9" />
     </svg>
+  );
+};
+
+const SpinnerLoader = () => {
+  return (
+    <div className="h-[80vh] flex justify-center items-center">
+      <Loader />
+    </div>
   );
 };
 

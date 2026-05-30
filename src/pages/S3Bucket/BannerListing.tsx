@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFetch } from '../../hooks/useFetch';
 import { AnalyticsInstance } from '../../service/analytics.service';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../components/ui/table';
@@ -19,9 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import SpinnerLoader from '@/common/SpinnerLoader';
 
 const BannerListing = () => {
-  const { fn, data } = useFetch(AnalyticsInstance.bannerListing);
+  const { fn, data, loading } = useFetch(AnalyticsInstance.bannerListing);
   const {
     fn: deleteBannerFn,
     data: deleteBannerData,
@@ -45,17 +46,24 @@ const BannerListing = () => {
   const [deleteBannerId, setDeleteBannerId] = React.useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [updateFormId, setUpdateFormId] = useState('');
+  const isMount = useRef(false);
   const [updateForm, setUpdateForm] = useState({
     title: '',
     linkUrl: '',
     imageUrl: '',
-    endPoint:'',
-    domain:''
+    endPoint: '',
+    domain: '',
   });
   const end = Math.min(page * limit, totalBanners);
   useEffect(() => {
     fn(limit, page);
   }, [page, limit]);
+
+  useEffect(() => {
+    if (data) {
+      isMount.current = true;
+    }
+  }, [data]);
   console.log('Banner Listing Data:', data);
   const handlePrev = () => {
     if (page > 1) setPage(page - 1);
@@ -125,8 +133,8 @@ const BannerListing = () => {
         title: getBannerDetsRes?.title,
         imageUrl: getBannerDetsRes.linkUrl,
         linkUrl: getBannerDetsRes?.linkUrl,
-        endPoint:getBannerDetsRes?.endPoint,
-        domain:getBannerDetsRes?.domain
+        endPoint: getBannerDetsRes?.endPoint,
+        domain: getBannerDetsRes?.domain,
       });
     }
   }, [getBannerDetsRes]);
@@ -138,7 +146,7 @@ const BannerListing = () => {
     formData.append('linkUrl', updateForm.linkUrl);
     formData.append('endPoint', updateForm.endPoint);
     formData.append('domain', updateForm.domain);
-    console.log(file)
+    console.log(file);
     if (file) {
       formData.append('image', file);
     }
@@ -154,8 +162,8 @@ const BannerListing = () => {
         title: '',
         imageUrl: '',
         linkUrl: '',
-        endPoint:'',
-        domain:''
+        endPoint: '',
+        domain: '',
       });
       console.log(data);
       data.banners = data.banners.map((item: any) => {
@@ -167,6 +175,8 @@ const BannerListing = () => {
       setUpdateFormId('');
     }
   }, [updateBannerRes]);
+
+  if (!isMount.current && loading) return <SpinnerLoader />;
 
   return (
     <>
@@ -285,32 +295,34 @@ const BannerListing = () => {
                       </div> */}
 
                       <div className="flex justify-between items-center gap-2">
-                                  <Input
-                                    type="url"
-                                    disabled
-                                    className="custom-class w-full"
-                                    name="target_link"
-                                    value={updateForm.domain+updateForm.endPoint}
-                                    placeholder="Redirect Link...)"
-                                  />
-                                  <Select value={updateForm.endPoint} onValueChange={(e)=>setUpdateForm({...updateForm, endPoint: e})}>
-                                    <SelectTrigger className="w-full max-w-42" name='endpoint'>
-                                      <SelectValue placeholder="Select Endpoint" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectGroup>
-                                   
-                                        <SelectItem value="/">Home</SelectItem>
-                                        <SelectItem value="/requirements">Requirement</SelectItem>
-                                        <SelectItem value="/account">Profile</SelectItem>
-                                        <SelectItem value="/account/cart">Cart</SelectItem>
-                                        <SelectItem value="/account/requirements">Posted/Draft</SelectItem>
-                                        <SelectItem value="/account/deal">Close Deal</SelectItem>
-                                        <SelectItem value="/account/notification">Notification</SelectItem>
-                                      </SelectGroup>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                        <Input
+                          type="url"
+                          disabled
+                          className="custom-class w-full"
+                          name="target_link"
+                          value={updateForm.domain + updateForm.endPoint}
+                          placeholder="Redirect Link...)"
+                        />
+                        <Select
+                          value={updateForm.endPoint}
+                          onValueChange={e => setUpdateForm({ ...updateForm, endPoint: e })}
+                        >
+                          <SelectTrigger className="w-full max-w-42" name="endpoint">
+                            <SelectValue placeholder="Select Endpoint" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="/">Home</SelectItem>
+                              <SelectItem value="/requirements">Requirement</SelectItem>
+                              <SelectItem value="/account">Profile</SelectItem>
+                              <SelectItem value="/account/cart">Cart</SelectItem>
+                              <SelectItem value="/account/requirements">Posted/Draft</SelectItem>
+                              <SelectItem value="/account/deal">Close Deal</SelectItem>
+                              <SelectItem value="/account/notification">Notification</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
                       <div className="bg-gray-700/25 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <button

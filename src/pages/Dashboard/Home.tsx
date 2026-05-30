@@ -8,12 +8,15 @@ import PageMeta from '../../components/common/PageMeta';
 import { useFetch } from '../../hooks/useFetch';
 import { AnalyticsInstance } from '../../service/analytics.service';
 import { useEffect } from 'react';
+import SpinnerLoader from '@/common/SpinnerLoader';
 
 export default function Home() {
-  const { fn, data } = useFetch(AnalyticsInstance.dashboardAnalytcs);
-  const { fn: productAnalyticsFn, data: productAnalytics } = useFetch(
-    AnalyticsInstance.getProductAnalytcs
-  );
+  const { fn, data, loading } = useFetch(AnalyticsInstance.dashboardAnalytcs);
+  const {
+    fn: productAnalyticsFn,
+    data: productAnalytics,
+    loading: productAnalyticsLoading,
+  } = useFetch(AnalyticsInstance.getProductAnalytcs);
   const { fn: subcatgoryProductsFn, data: subcatgoryProductsRes } = useFetch(
     AnalyticsInstance.subCategoryProducts
   );
@@ -28,29 +31,33 @@ export default function Home() {
         title="React.js Ecommerce Dashboard | TailAdmin - React.js Admin Dashboard Template"
         description="This is React.js Ecommerce Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <div className="grid grid-cols-12 gap-4 md:gap-6">
-        <div className="col-span-12 space-y-6 xl:col-span-12">
-          <EcommerceMetrics data={data} />
+      {loading || productAnalyticsLoading ? (
+        <SpinnerLoader />
+      ) : (
+        <div className="grid grid-cols-12 gap-4 md:gap-6">
+          <div className="col-span-12 space-y-6 xl:col-span-12">
+            <EcommerceMetrics data={data} />
 
-          <MonthlySalesChart data={productAnalytics} />
-        </div>
+            <MonthlySalesChart data={productAnalytics} />
+          </div>
 
-        {/* <div className="col-span-12 xl:col-span-5">
+          {/* <div className="col-span-12 xl:col-span-5">
           <MonthlyTarget />
         </div> */}
 
-        <div className="col-span-12">
-          <StatisticsChart fn={subcatgoryProductsFn} data={subcatgoryProductsRes} />
-        </div>
+          <div className="col-span-12">
+            <StatisticsChart fn={subcatgoryProductsFn} data={subcatgoryProductsRes} />
+          </div>
 
-        {/* <div className="col-span-12 xl:col-span-5">
+          {/* <div className="col-span-12 xl:col-span-5">
           <DemographicCard />
         </div> */}
 
-        <div className="col-span-12 xl:col-span-12">
-          <RecentOrders raws={data?.recentProductCreated} />
+          <div className="col-span-12 xl:col-span-12">
+            <RecentOrders raws={data?.recentProductCreated} />
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

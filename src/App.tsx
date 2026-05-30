@@ -29,11 +29,10 @@ import { AuthServiceInstance } from './service/auth.service';
 import { useFetch } from './hooks/useFetch';
 
 import UserPersmission from './pages/UserPermission/UserPersmission';
-
 import BidListingByProduct from './pages/BidListing/BidListingByProduct';
 import Requirement from './pages/Requirement/Requirement';
 import RequirementById from './pages/Requirement/RequirementById';
-
+import SpinnerLoader from './common/SpinnerLoader';
 const Home = lazy(() => import('./pages/Dashboard/Home'));
 const BannerBucket = lazy(() => import('./pages/S3Bucket/BannerBucket'));
 const BannerListing = lazy(() => import('./pages/S3Bucket/BannerListing'));
@@ -57,12 +56,7 @@ function ProtectedRoute({ children }: any) {
     if (data) setUser(data);
   }, [data]);
 
-  if (checking || loading)
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
+  if (checking || loading) return <SpinnerLoader />; // 👈 reuse here too
 
   if ((!user && !data) || error) {
     return <Navigate to="/signin" replace />;
@@ -75,65 +69,46 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <Routes>
-        {/* EVERYTHING INSIDE APP LAYOUT IS PROTECTED */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
-          {/* Dashboard */}
+      <Suspense fallback={<SpinnerLoader />}>
+        {' '}
+        {/* 👈 wrap all routes */}
+        <Routes>
           <Route
-            index
-            path="/"
             element={
-              <Suspense fallback={<p>Loading dashboard...</p>}>
-                <Home />
-              </Suspense>
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
             }
-          />
+          >
+            <Route index path="/" element={<Home />} />
+            <Route path="/profile" element={<UserProfiles />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/blank" element={<Blank />} />
+            <Route path="/user-permission" element={<UserPersmission />} />
+            <Route path="/banner-bucket" element={<BannerBucket />} />
+            <Route path="/banner-table" element={<BannerListing />} />
+            <Route path="/all-products" element={<AllProducts />} />
+            <Route path="/form-elements" element={<FormElements />} />
+            <Route path="/basic-tables" element={<BasicTables />} />
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/avatars" element={<Avatars />} />
+            <Route path="/badge" element={<Badges />} />
+            <Route path="/buttons" element={<Buttons />} />
+            <Route path="/images" element={<Images />} />
+            <Route path="/videos" element={<Videos />} />
+            <Route path="/line-chart" element={<LineChart />} />
+            <Route path="/bar-chart" element={<BarChart />} />
+            <Route path="/bid-listing" element={<BidListing />} />
+            <Route path="/bid-listing-by-product/:id" element={<BidListingByProduct />} />
+            <Route path="/requirement" element={<Requirement />} />
+            <Route path="/product-requirement/:id" element={<RequirementById />} />
+          </Route>
 
-          {/* Others Page */}
-          <Route path="/profile" element={<UserProfiles />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/blank" element={<Blank />} />
-          <Route path="/user-permission" element={<UserPersmission />} />
-          <Route path="/banner-bucket" element={<BannerBucket />} />
-          <Route path="/banner-table" element={<BannerListing />} />
-          <Route path="/all-products" element={<AllProducts />} />
-
-          {/* Forms */}
-          <Route path="/form-elements" element={<FormElements />} />
-
-          {/* Tables */}
-          <Route path="/basic-tables" element={<BasicTables />} />
-
-          {/* UI Elements */}
-          <Route path="/alerts" element={<Alerts />} />
-          <Route path="/avatars" element={<Avatars />} />
-          <Route path="/badge" element={<Badges />} />
-          <Route path="/buttons" element={<Buttons />} />
-          <Route path="/images" element={<Images />} />
-          <Route path="/videos" element={<Videos />} />
-
-          {/* Charts */}
-          <Route path="/line-chart" element={<LineChart />} />
-          <Route path="/bar-chart" element={<BarChart />} />
-          <Route path="/bid-listing" element={<BidListing />} />
-          <Route path="/bid-listing-by-product/:id" element={<BidListingByProduct />} />
-          <Route path="/requirement" element={<Requirement />} />
-          <Route path="/product-requirement/:id" element={<RequirementById />} />
-        </Route>
-
-        {/* Auth Routes */}
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-
-        {/* Fallback */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

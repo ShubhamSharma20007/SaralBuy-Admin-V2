@@ -1,7 +1,13 @@
 import { axiosInstance } from '../helper/axiosInstance';
 
 class UserService {
-  async getUsers(limit: string, page: string, text: string, selectActiveOption: string, sort: string) {
+  async getUsers(
+    limit: string,
+    page: string,
+    text: string,
+    selectActiveOption: string,
+    sort: string
+  ) {
     return axiosInstance
       .get('/auth/get-users', {
         params: {
@@ -19,7 +25,7 @@ class UserService {
       .get(`/auth/get-user/${userId}`)
       .then(response => response.data.data || response.data);
   }
- async updateUser(userId: string, data: any) {
+  async updateUser(userId: string, data: any) {
     return axiosInstance
       .put(`/auth/update-user/${userId}`, data)
       .then(response => response.data.data || response.data);

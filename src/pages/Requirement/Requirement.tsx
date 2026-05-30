@@ -1,13 +1,14 @@
+import SpinnerLoader from '@/common/SpinnerLoader';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { currenySymbol } from '@/helper/currencySymbol';
 import { useFetch } from '@/hooks/useFetch';
 import { EyeIcon } from '@/icons';
 import requirementService from '@/service/requirement.service';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Requirement = () => {
-  const { fn, data } = useFetch(requirementService.getRequirements);
+  const { fn, data, loading } = useFetch(requirementService.getRequirements);
   const [page, setPage] = useState(1);
   const [limit, _] = useState(10);
   const [text, setText] = useState('');
@@ -16,9 +17,16 @@ const Requirement = () => {
   const totalPages = Math.ceil(totalRequirements / limit);
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, totalRequirements);
+  const isMount = useRef(false);
   useEffect(() => {
     fn(limit, page, text);
   }, [text, page, limit]);
+
+  useEffect(() => {
+    if (data) {
+      isMount.current = true;
+    }
+  }, [data]);
 
   function handlePrev() {
     if (page > 1) {
@@ -55,6 +63,7 @@ const Requirement = () => {
     const searchTerm = e.target[0].value;
     setText(searchTerm);
   }
+  if (!isMount.current && loading) return <SpinnerLoader />;
   return (
     <>
       <form

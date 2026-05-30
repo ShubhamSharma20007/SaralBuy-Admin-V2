@@ -64,13 +64,13 @@ const AllProducts = () => {
   };
 
   const pageNumbers = getPageNumbers();
-function handleTextSearch(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  const formData = new FormData(e.currentTarget);
-  const searchText = (formData.get('text') as string)?.trim() || '';
-  setPage(1); 
-  setText(searchText);
-}
+  function handleTextSearch(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const searchText = (formData.get('text') as string)?.trim() || '';
+    setPage(1);
+    setText(searchText);
+  }
 
   const handlePrev = () => {
     if (page > 1) setPage(page - 1);
@@ -99,8 +99,8 @@ function handleTextSearch(e: React.FormEvent<HTMLFormElement>) {
 
   function handleFileChange(e: any) {
     const file = e.target.files[0];
-    if(!file.type.startsWith('image/')){
-      toast.error('Please select an image file')
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
       return;
     }
     if (file.size > 1024 * 1024 * 2) {
@@ -127,23 +127,23 @@ function handleTextSearch(e: React.FormEvent<HTMLFormElement>) {
     await updateProductFn(formData, currentProductId);
   }
 
-useEffect(() => {
-  if (updateProductRes) {
-    setOpen(false);
+  useEffect(() => {
+    if (updateProductRes) {
+      setOpen(false);
 
-    setUpdateForm({
-      title: '',
-      description: '',
-      budget: '',
-      image: null,
-    });
+      setUpdateForm({
+        title: '',
+        description: '',
+        budget: '',
+        image: null,
+      });
 
-    setFile(null);
-    setCurrentProductId(null);
+      setFile(null);
+      setCurrentProductId(null);
 
-    getAllProductsFn(limit, page, text); 
-  }
-}, [updateProductRes]);
+      getAllProductsFn(limit, page, text);
+    }
+  }, [updateProductRes]);
   return (
     <>
       {/* Modal */}

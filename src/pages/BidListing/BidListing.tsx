@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFetch } from '../../hooks/useFetch';
 import bidService from '../../service/bid.service';
 // import BasicTableOne from '../../components/tables/BasicTables/BasicTableOne'
@@ -6,9 +6,10 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../compon
 import { EyeIcon } from '../../icons';
 import { useNavigate } from 'react-router';
 import { currenySymbol } from '../../helper/currencySymbol';
+import SpinnerLoader from '@/common/SpinnerLoader';
 
 const BidListing = () => {
-  const { fn, data } = useFetch(bidService.getBids);
+  const { fn, data, loading } = useFetch(bidService.getBids);
   const [text, setText] = React.useState('');
   const [limit, _] = React.useState(10);
   const [page, setPage] = React.useState(1);
@@ -17,6 +18,7 @@ const BidListing = () => {
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, totalBids);
   const navigate = useNavigate();
+  const isMount = useRef(false);
   function handlePrev() {
     if (page > 1) {
       setPage(page - 1);
@@ -50,17 +52,25 @@ const BidListing = () => {
     fn(limit, page, text);
   }, [text, limit, page]);
 
+  useEffect(() => {
+    if (data) {
+      isMount.current = true;
+    }
+  }, [data]);
+
   function handleTextSearch(e: any) {
     e.preventDefault();
     const searchTerm = e.target[0].value;
     setText(searchTerm);
-    setPage(1)
-    
+    setPage(1);
   }
 
   function showProductBids(productObj: any) {
     navigate('/bid-listing-by-product/' + productObj._id);
   }
+
+  if (!isMount.current && loading) return <SpinnerLoader />;
+
   return (
     <>
       <form
