@@ -312,7 +312,7 @@ const BannerListing = () => {
                           <SelectContent>
                             <SelectGroup>
                               <SelectItem value="/">Home</SelectItem>
-                              <SelectItem value="/requirements">Requirement</SelectItem>
+                              <SelectItem value="/requirement">Requirement</SelectItem>
                               <SelectItem value="/account">Profile</SelectItem>
                               <SelectItem value="/account/cart">Cart</SelectItem>
                               <SelectItem value="/account/requirements">Posted/Draft</SelectItem>
