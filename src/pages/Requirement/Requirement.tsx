@@ -62,6 +62,7 @@ const Requirement = () => {
     e.preventDefault();
     const searchTerm = e.target[0].value;
     setText(searchTerm);
+    setPage(1)
   }
   if (!isMount.current && loading) return <SpinnerLoader />;
   return (
