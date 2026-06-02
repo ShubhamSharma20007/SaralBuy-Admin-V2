@@ -23,6 +23,7 @@ const UserPersmission = () => {
   const isMounted = useRef(false);
 
   async function handleFilterSubmit() {
+    console.log('Filter submitted with:', { limit, page, text, selectActiveOption, sort });
     fn(limit, page, text, selectActiveOption, sort);
   }
 
@@ -38,7 +39,11 @@ const UserPersmission = () => {
     fn(limit, page, text).finally(() => {
       isMounted.current = true;
     });
-  }, [page, limit, text]);
+  }, [page, limit]);
+
+  useEffect(() => {
+    fn(limit,page,text)
+  },[text])
 
   if (!isMounted.current && loading) return <SpinnerLoader />;
 

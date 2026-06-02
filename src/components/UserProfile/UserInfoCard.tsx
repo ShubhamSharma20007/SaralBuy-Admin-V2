@@ -229,6 +229,8 @@ export default function UserInfoCard() {
                     />
                   </div>
 
+                  
+
                   <div className="col-span-2">
                     <Label>Address</Label>
                     <TextArea

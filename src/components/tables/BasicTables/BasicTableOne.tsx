@@ -65,6 +65,8 @@ export default function BasicTableOne({
       phone: '',
       createdAt: '',
       lastLogin: '',
+      businessName:'',
+      currentLocation:''
     },
   });
   const totalUsers = data?.totalUsers || 0;
@@ -333,6 +335,37 @@ export default function BasicTableOne({
                       <Input type="date" disabled={true} props={{ ...register('lastLogin') }} />
                     </div>
                   )}
+                  
+                   <div className="col-span-2 lg:col-span-1">
+                    <Label>Location</Label>
+                    <Input
+                      type="text"
+                     
+                      props={{ ...register('currentLocation') }}
+                      placeholder="Enter your Location"
+                    />
+                  </div>
+                   <div className="col-span-2">
+                    <Label>Business Name</Label>
+                    {/* */}
+                    <Controller
+                      name="businessName"
+                      control={control}
+                      rules={{ required: 'Business name is required' }} // Add validation if needed
+                      render={({ field }) => (
+                        <TextArea
+                          placeholder="Business Name"
+                          value={field.value}
+                          onChange={(text: string) => field.onChange(text)}
+                          props={{
+                            name: field.name,
+                            onBlur: field.onBlur,
+                            ref: field.ref,
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
                   <div className="col-span-2">
                     <Label>Address</Label>
                     {/* */}

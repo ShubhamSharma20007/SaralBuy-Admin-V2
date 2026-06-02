@@ -8,13 +8,16 @@ import { AppWrapper } from './components/common/PageMeta.tsx';
 import { ThemeProvider } from './context/ThemeContext.tsx';
 import { UserContextProvider } from './context/UserContext.tsx';
 import { Toaster } from 'sonner';
+import { TooltipProvider } from './components/ui/tooltip.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <UserContextProvider>
     <ThemeProvider>
       <AppWrapper>
         <Toaster richColors />
+        <TooltipProvider>
         <App />
+        </TooltipProvider>
       </AppWrapper>
     </ThemeProvider>
   </UserContextProvider>

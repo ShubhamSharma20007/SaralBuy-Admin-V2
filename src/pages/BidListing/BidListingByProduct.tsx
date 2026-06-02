@@ -5,6 +5,13 @@ import Badge from '../../components/ui/badge/Badge';
 import { useFetch } from '../../hooks/useFetch';
 import bidService from '../../service/bid.service';
 import { currenySymbol } from '../../helper/currencySymbol';
+import { Eye } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 const BidListingByProduct = () => {
   const { id } = useParams();
   const [productObj, setProductObj] = useState<any>({});
@@ -204,8 +211,15 @@ const BidListingByProduct = () => {
                             />
                           </div>
                           <div>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3">
                               {entry.buyerId.firstName || ''} {entry.buyerId.lastName || ''}
+                              <Tooltip>
+  <TooltipTrigger> <Eye className='text-orange-400 cursor-pointer'/></TooltipTrigger>
+  <TooltipContent>
+     View Buyer
+  </TooltipContent>
+</Tooltip>
+                          
                             </span>
                           </div>
                         </div>
@@ -220,8 +234,16 @@ const BidListingByProduct = () => {
                             />
                           </div>
                           <div>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                              {entry.sellerId.firstName || ''} {entry.sellerId.lastName || ''}
+                        
+                             <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3">
+                                                          {entry.sellerId.firstName || ''} {entry.sellerId.lastName || ''}
+                              <Tooltip>
+  <TooltipTrigger> <Eye className='text-orange-400 cursor-pointer'/></TooltipTrigger>
+  <TooltipContent>
+     View Seller
+  </TooltipContent>
+</Tooltip>
+                          
                             </span>
                           </div>
                         </div>
