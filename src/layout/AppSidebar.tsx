@@ -47,6 +47,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: 'Banner Bucket', path: '/banner-bucket', pro: false },
       { name: 'Banner Listing', path: '/banner-table', pro: false },
+      { name: 'Bucket', path: '/bucket', pro: false },
     ],
   },
   {

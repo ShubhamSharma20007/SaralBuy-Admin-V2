@@ -33,6 +33,7 @@ import BidListingByProduct from './pages/BidListing/BidListingByProduct';
 import Requirement from './pages/Requirement/Requirement';
 import RequirementById from './pages/Requirement/RequirementById';
 import SpinnerLoader from './common/SpinnerLoader';
+import Bucket from './pages/Bucket';
 const Home = lazy(() => import('./pages/Dashboard/Home'));
 const BannerBucket = lazy(() => import('./pages/S3Bucket/BannerBucket'));
 const BannerListing = lazy(() => import('./pages/S3Bucket/BannerListing'));
@@ -115,6 +116,7 @@ export default function App() {
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/avatars" element={<Avatars />} />
             <Route path="/badge" element={<Badges />} />
+            <Route path="/bucket" element={<Bucket />} />
             <Route path="/buttons" element={<Buttons />} />
             <Route path="/images" element={<Images />} />
             <Route path="/videos" element={<Videos />} />

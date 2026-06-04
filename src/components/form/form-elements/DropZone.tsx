@@ -1,11 +1,24 @@
-import ComponentCard from '../../common/ComponentCard';
+
 import { useDropzone } from 'react-dropzone';
+import { toast } from 'sonner';
 // import Dropzone from "react-dropzone";
 
-const DropzoneComponent: React.FC = () => {
+type Props={
+  file:File | null,
+  setFile:React.Dispatch<React.SetStateAction<File  | null>>
+}
+
+const DropzoneComponent: React.FC<Props> = ({setFile,file}) => {
   const onDrop = (acceptedFiles: File[]) => {
     console.log('Files dropped:', acceptedFiles);
-    // Handle file uploads here
+    const selectedFile = acceptedFiles[0] as File;
+    if(!selectedFile) return;
+    if(!selectedFile.type.startsWith('image/')){
+      toast.error('Only allow Png, Jpeg, Webp file only')
+      return;
+    }
+   setFile?.(selectedFile)
+    
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -14,11 +27,10 @@ const DropzoneComponent: React.FC = () => {
       'image/png': [],
       'image/jpeg': [],
       'image/webp': [],
-      'image/svg+xml': [],
     },
   });
   return (
-    <ComponentCard title="Dropzone">
+    // <ComponentCard title="Dropzone">
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
         <form
           {...getRootProps()}
@@ -59,15 +71,17 @@ const DropzoneComponent: React.FC = () => {
               {isDragActive ? 'Drop Files Here' : 'Drag & Drop Files Here'}
             </h4>
 
-            <span className=" text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
-              Drag and drop your PNG, JPG, WebP, SVG images here or browse
+            <span className=" text-center my-2 mb-4 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
+              Drag and drop your PNG, JPG, WebP images here or browse
             </span>
-
+            {
+              file &&  <small>{file.name}</small>
+            }
             <span className="font-medium underline text-theme-sm text-brand-500">Browse File</span>
           </div>
         </form>
       </div>
-    </ComponentCard>
+    // </ComponentCard>
   );
 };
 
