@@ -62,6 +62,7 @@ const Bucket = () => {
               size="sm"
               type='button'
               onClick={() => {
+                if(!data) return;
                 navigator.clipboard.writeText(endpoint);
                 toast.success('Link copied');
               }}
