@@ -5,8 +5,7 @@ import Badge from '../../components/ui/badge/Badge';
 import { useFetch } from '../../hooks/useFetch';
 import bidService from '../../service/bid.service';
 import { currenySymbol } from '../../helper/currencySymbol';
-import { Eye } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { useModal } from '@/hooks/useModal';
 import UserDetailsCard from '@/components/UserProfile/UserDetailsCard';
 import { UserServiceInstance } from '@/service/user.service';

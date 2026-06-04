@@ -14,7 +14,7 @@ function UserDetailsCard({
   closeModal: any;
   payload: any;
 }) {
-  const { register, handleSubmit, control, getValues, setValue, reset } = useForm({
+  const { register, control, getValues, setValue, reset } = useForm({
     defaultValues: {
       firstName: '',
       lastName: '',

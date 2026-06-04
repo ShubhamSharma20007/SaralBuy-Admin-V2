@@ -33,7 +33,6 @@ import BidListingByProduct from './pages/BidListing/BidListingByProduct';
 import Requirement from './pages/Requirement/Requirement';
 import RequirementById from './pages/Requirement/RequirementById';
 import SpinnerLoader from './common/SpinnerLoader';
-import { axiosInstance } from './helper/axiosInstance';
 const Home = lazy(() => import('./pages/Dashboard/Home'));
 const BannerBucket = lazy(() => import('./pages/S3Bucket/BannerBucket'));
 const BannerListing = lazy(() => import('./pages/S3Bucket/BannerListing'));
