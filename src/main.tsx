@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
       <AppWrapper>
         <Toaster richColors />
         <TooltipProvider>
-        <App />
+          <App />
         </TooltipProvider>
       </AppWrapper>
     </ThemeProvider>

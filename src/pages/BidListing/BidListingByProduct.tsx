@@ -6,22 +6,28 @@ import { useFetch } from '../../hooks/useFetch';
 import bidService from '../../service/bid.service';
 import { currenySymbol } from '../../helper/currencySymbol';
 import { Eye } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useModal } from '@/hooks/useModal';
+import UserDetailsCard from '@/components/UserProfile/UserDetailsCard';
+import { UserServiceInstance } from '@/service/user.service';
 
 const BidListingByProduct = () => {
   const { id } = useParams();
   const [productObj, setProductObj] = useState<any>({});
+  const { openModal, isOpen, closeModal } = useModal();
   const { fn, data } = useFetch(bidService.getBidById);
   const [text, setText] = React.useState('');
   const [limit, _] = React.useState(10);
   const [page, setPage] = React.useState(1);
+  const [hasPaymentDetails, setHasPaymentDetails] = useState(false);
   const totalBids = data?.totalBids || 0;
   const totalPages = Math.ceil(totalBids / limit);
-  const start = (page - 1) * limit + 1;
+  const {
+    fn: getUserDetailFn,
+    data: getUserRes,
+    loading,
+  } = useFetch(UserServiceInstance.getUserById);
+  const start = totalBids === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, totalBids);
   function handlePrev() {
     if (page > 1) {
@@ -59,6 +65,12 @@ const BidListingByProduct = () => {
   useEffect(() => {
     if (data) {
       setProductObj(data?.bids || []);
+      const hasPayment =
+        productObj?.productDetails?.paymentAndDelivery?.paymentMode.length > 0 ||
+        productObj?.productDetails?.paymentAndDelivery?.gstNumber.length > 0 ||
+        productObj?.productDetails?.paymentAndDelivery?.organizationName.length > 0 ||
+        productObj?.productDetails?.paymentAndDelivery?.organizationAddress.length > 0;
+      setHasPaymentDetails(hasPayment);
       setPage(data?.page);
     } else {
       // navigate(-1)
@@ -71,8 +83,20 @@ const BidListingByProduct = () => {
     setText(searchTerm);
   }
 
+  const userDetails = async (_id: string) => {
+    if (loading) return;
+    await getUserDetailFn(_id);
+  };
+  useEffect(() => {
+    if (getUserRes) {
+      console.log(getUserRes);
+      openModal();
+    }
+  }, [getUserRes]);
+
   return (
     <>
+      <UserDetailsCard isOpen={isOpen} closeModal={closeModal} payload={getUserRes} />
       <section className="">
         <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
@@ -95,26 +119,72 @@ const BidListingByProduct = () => {
                 {productObj?.productDetails?.title}
               </h1>
               <div className="mt-4 sm:items-center sm:gap-4 ">
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Budget : ₹{currenySymbol(productObj?.productDetails?.minimumBudget)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Budget : ₹{currenySymbol(productObj?.productDetails?.minimumBudget)}
+                  </p>
+                  {productObj?.productId?.typeOfProduct && (
+                    <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                      Product Type : {productObj?.productDetails?.typeOfProduct || 'N/A'}
+                    </p>
+                  )}
+                </div>
+
                 <hr className="my-3 border-gray-200 dark:border-gray-800 " />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Brand : {productObj?.productDetails?.brand}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Brand : {productObj?.productDetails?.brand}
+                  </p>
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Sold : {productObj?.productDetails?.isSoldProduct ? 'Yes' : 'No'}
+                  </p>
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Quantity : {currenySymbol(productObj?.productDetails?.quantity)}
+                  </p>
+                </div>
+
                 <hr className="my-3 border-gray-200 dark:border-gray-800" />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Quantity : {currenySymbol(productObj?.productDetails?.quantity)}
-                </p>
-                <hr className="my-3 border-gray-200 dark:border-gray-800" />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Total Bids : {productObj?.totalBidsPerProduct}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Total Requirements : {productObj?.totalBidsPerProduct}
+                  </p>
+
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
+                    Creation Date : {new Date(productObj?.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+
                 <hr className="my-3 border-gray-200 dark:border-gray-800" />
                 <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
                   Creation Date :{' '}
                   {new Date(productObj?.productDetails?.createdAt).toLocaleDateString()}
                 </p>
+                <hr className="my-3 border-gray-200 dark:border-gray-800" />
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Category : {productObj?.productDetails?.categoryId?.categoryName || 'N/A'}
+                  </p>
+
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
+                    Sub Category : {productObj?.productDetails?.subCategoryId?.name || 'N/A'}
+                  </p>
+                </div>
+                {hasPaymentDetails && (
+                  <div>
+                    <p className="text-lg font-semibold mb-5 text-gray-900 dark:text-white mt-5 underline">
+                      Payment Details
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                        Category : {productObj?.productDetails?.categoryId?.categoryName || 'N/A'}
+                      </p>
+
+                      <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
+                        Sub Category : {productObj?.productDetails?.subCategoryId?.name || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -211,15 +281,13 @@ const BidListingByProduct = () => {
                             />
                           </div>
                           <div>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3">
+                            <span
+                              onClick={() => {
+                                userDetails(entry?.buyerId?._id);
+                              }}
+                              className="border-orange-300 border-b-[1px] cursor-pointer block font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3"
+                            >
                               {entry.buyerId.firstName || ''} {entry.buyerId.lastName || ''}
-                              <Tooltip>
-  <TooltipTrigger> <Eye className='text-orange-400 cursor-pointer'/></TooltipTrigger>
-  <TooltipContent>
-     View Buyer
-  </TooltipContent>
-</Tooltip>
-                          
                             </span>
                           </div>
                         </div>
@@ -234,16 +302,13 @@ const BidListingByProduct = () => {
                             />
                           </div>
                           <div>
-                        
-                             <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3">
-                                                          {entry.sellerId.firstName || ''} {entry.sellerId.lastName || ''}
-                              <Tooltip>
-  <TooltipTrigger> <Eye className='text-orange-400 cursor-pointer'/></TooltipTrigger>
-  <TooltipContent>
-     View Seller
-  </TooltipContent>
-</Tooltip>
-                          
+                            <span
+                              onClick={() => {
+                                userDetails(entry?.sellerId?._id);
+                              }}
+                              className="border-orange-300 border-b-[1px] cursor-pointer font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3"
+                            >
+                              {entry.sellerId.firstName || ''} {entry.sellerId.lastName || ''}
                             </span>
                           </div>
                         </div>

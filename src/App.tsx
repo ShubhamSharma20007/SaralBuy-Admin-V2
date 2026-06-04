@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router';
 import { Suspense, useContext, useEffect, useState, lazy } from 'react';
 
 import SignIn from './pages/AuthPages/SignIn';
@@ -33,6 +33,7 @@ import BidListingByProduct from './pages/BidListing/BidListingByProduct';
 import Requirement from './pages/Requirement/Requirement';
 import RequirementById from './pages/Requirement/RequirementById';
 import SpinnerLoader from './common/SpinnerLoader';
+import { axiosInstance } from './helper/axiosInstance';
 const Home = lazy(() => import('./pages/Dashboard/Home'));
 const BannerBucket = lazy(() => import('./pages/S3Bucket/BannerBucket'));
 const BannerListing = lazy(() => import('./pages/S3Bucket/BannerListing'));
@@ -64,6 +65,28 @@ function ProtectedRoute({ children }: any) {
 
   return children;
 }
+
+const AuthProductRoute = ({ children }: any) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await AuthServiceInstance.adminProfile();
+
+        if (response?._id) {
+          navigate('/', { replace: true });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  return children;
+};
 
 export default function App() {
   return (
@@ -104,8 +127,22 @@ export default function App() {
             <Route path="/product-requirement/:id" element={<RequirementById />} />
           </Route>
 
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/signin"
+            element={
+              <AuthProductRoute>
+                <SignIn />
+              </AuthProductRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <AuthProductRoute>
+                <SignUp />
+              </AuthProductRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

@@ -42,8 +42,8 @@ const UserPersmission = () => {
   }, [page, limit]);
 
   useEffect(() => {
-    fn(limit,page,text)
-  },[text])
+    fn(limit, page, text);
+  }, [text]);
 
   if (!isMounted.current && loading) return <SpinnerLoader />;
 

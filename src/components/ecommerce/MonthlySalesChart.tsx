@@ -1,7 +1,6 @@
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
-
 type Props = {
   data: any;
 };

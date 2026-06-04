@@ -62,7 +62,7 @@ const Requirement = () => {
     e.preventDefault();
     const searchTerm = e.target[0].value;
     setText(searchTerm);
-    setPage(1)
+    setPage(1);
   }
   if (!isMount.current && loading) return <SpinnerLoader />;
   return (
@@ -126,7 +126,7 @@ const Requirement = () => {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Product Budget
+                  Product Budget (₹)
                 </TableCell>
                 <TableCell
                   isHeader

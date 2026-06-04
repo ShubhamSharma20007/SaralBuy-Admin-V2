@@ -13,7 +13,7 @@ const BidListing = () => {
   const [text, setText] = React.useState('');
   const [limit, _] = React.useState(10);
   const [page, setPage] = React.useState(1);
-  const totalBids =   data?.totalBids
+  const totalBids = data?.totalBids;
   const totalPages = Math.ceil(totalBids / limit);
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, totalBids);
@@ -132,7 +132,7 @@ const BidListing = () => {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Product Budget
+                  Product Budget (₹)
                 </TableCell>
                 <TableCell
                   isHeader

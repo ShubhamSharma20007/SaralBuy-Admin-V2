@@ -21,6 +21,7 @@ type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
+  activeFor?: string[];
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
@@ -30,7 +31,6 @@ const navItems: NavItem[] = [
     name: 'Dashboard',
     path: '/',
   },
-
   {
     icon: <UserCircleIcon />,
     name: 'Admin Profile',
@@ -53,30 +53,14 @@ const navItems: NavItem[] = [
     icon: <ListIcon />,
     name: 'Bid Listing',
     path: '/bid-listing',
+    activeFor: ['/bid-listing-by-product'],
   },
   {
     icon: <TableIcon />,
     name: 'Requirement',
     path: '/requirement',
+    activeFor: ['/product-requirement'],
   },
-  // {
-  //   name: "Forms",
-  //   icon: <ListIcon />,
-  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  // },
-  // {
-  //   name: "Tables",
-  //   icon: <TableIcon />,
-  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  // },
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "Blank Page", path: "/blank", pro: false },
-  //     { name: "404 Error", path: "/error-404", pro: false },
-  //   ],
-  // },
 ];
 
 const othersItems: NavItem[] = [
@@ -121,8 +105,19 @@ const AppSidebar: React.FC = () => {
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback((path: string) => location.pathname === path, [location.pathname]);
+
+  const isActiveWithChildren = useCallback(
+    (nav: NavItem) => {
+      if (!nav.path) return false;
+      if (isActive(nav.path)) return true;
+      if (nav.activeFor) {
+        return nav.activeFor.some(prefix => location.pathname.startsWith(prefix));
+      }
+      return false;
+    },
+    [location.pathname, isActive]
+  );
 
   useEffect(() => {
     let submenuMatched = false;
@@ -211,12 +206,12 @@ const AppSidebar: React.FC = () => {
               <Link
                 to={nav.path}
                 className={`menu-item group ${
-                  isActive(nav.path) ? 'menu-item-active' : 'menu-item-inactive'
+                  isActiveWithChildren(nav) ? 'menu-item-active' : 'menu-item-inactive'
                 }`}
               >
                 <span
                   className={`menu-item-icon-size ${
-                    isActive(nav.path) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'
+                    isActiveWithChildren(nav) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'
                   }`}
                 >
                   {nav.icon}
@@ -341,25 +336,8 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, 'main')}
             </div>
-            {/* <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div> */}
           </div>
         </nav>
-        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>
     </aside>
   );

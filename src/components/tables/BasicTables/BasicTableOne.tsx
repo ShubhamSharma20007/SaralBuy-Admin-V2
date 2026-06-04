@@ -65,8 +65,8 @@ export default function BasicTableOne({
       phone: '',
       createdAt: '',
       lastLogin: '',
-      businessName:'',
-      currentLocation:''
+      businessName: '',
+      currentLocation: '',
     },
   });
   const totalUsers = data?.totalUsers || 0;
@@ -335,17 +335,16 @@ export default function BasicTableOne({
                       <Input type="date" disabled={true} props={{ ...register('lastLogin') }} />
                     </div>
                   )}
-                  
-                   <div className="col-span-2 lg:col-span-1">
+
+                  <div className="col-span-2 lg:col-span-1">
                     <Label>Location</Label>
                     <Input
                       type="text"
-                     
                       props={{ ...register('currentLocation') }}
                       placeholder="Enter your Location"
                     />
                   </div>
-                   <div className="col-span-2">
+                  <div className="col-span-2">
                     <Label>Business Name</Label>
                     {/* */}
                     <Controller

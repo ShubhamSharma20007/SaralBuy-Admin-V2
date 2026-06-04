@@ -4,11 +4,20 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../compon
 import { useFetch } from '../../hooks/useFetch';
 import { currenySymbol } from '../../helper/currencySymbol';
 import requirementService from '@/service/requirement.service';
+import { UserServiceInstance } from '@/service/user.service';
+import UserDetailsCard from '@/components/UserProfile/UserDetailsCard';
+import { useModal } from '@/hooks/useModal';
 const RequirementById = () => {
   const { id } = useParams();
+  const { openModal, isOpen, closeModal } = useModal();
   const [productObj, setProductObj] = useState<any>({});
   const { fn, data } = useFetch(requirementService.getRequirementsById);
-
+  const {
+    fn: getUserDetailFn,
+    data: getUserRes,
+    loading,
+  } = useFetch(UserServiceInstance.getUserById);
+  const [hasPaymentDetails, setHasPaymentDetails] = useState(false);
   const [text] = React.useState('');
   const [limit, _] = React.useState(10);
   const [page, setPage] = React.useState(1);
@@ -52,6 +61,12 @@ const RequirementById = () => {
   useEffect(() => {
     if (data) {
       setProductObj(data?.requirement || {});
+      const hasPayment =
+        productObj?.productId?.paymentAndDelivery?.paymentMode.length > 0 ||
+        productObj?.productId?.paymentAndDelivery?.gstNumber.length > 0 ||
+        productObj?.productId?.paymentAndDelivery?.organizationName.length > 0 ||
+        productObj?.productId?.paymentAndDelivery?.organizationAddress.length > 0;
+      setHasPaymentDetails(hasPayment);
     } else {
       // navigate(-1)
     }
@@ -63,8 +78,20 @@ const RequirementById = () => {
   //     setText(searchTerm);
   //   }
 
+  const userDetails = async (_id: string) => {
+    if (loading) return;
+    await getUserDetailFn(_id);
+  };
+  useEffect(() => {
+    if (getUserRes) {
+      console.log(getUserRes);
+      openModal();
+    }
+  }, [getUserRes]);
+
   return (
     <>
+      <UserDetailsCard isOpen={isOpen} closeModal={closeModal} payload={getUserRes} />
       <section className="">
         <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
@@ -86,30 +113,78 @@ const RequirementById = () => {
               <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white capitalize">
                 {productObj?.productId?.title}
               </h1>
+              <p className="text-sm font-regular mb-6 mt-2 ">
+                {productObj?.productId?.description}
+              </p>
               <div className="mt-4 sm:items-center sm:gap-4 ">
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Budget : ₹{currenySymbol(productObj?.productId?.minimumBudget)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Budget : ₹{currenySymbol(productObj?.productId?.minimumBudget)}
+                  </p>
+                  {productObj?.productId?.typeOfProduct && (
+                    <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                      Product Type : {productObj?.productId?.typeOfProduct || 'N/A'}
+                    </p>
+                  )}
+                </div>
+
                 <hr className="my-3 border-gray-200 dark:border-gray-800 " />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Brand : {productObj?.productId?.brand}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Brand : {productObj?.productId?.brand}
+                  </p>
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Sold : {productObj?.productId?.isSoldProduct ? 'Yes' : 'No'}
+                  </p>
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Quantity : {currenySymbol(productObj?.productId?.quantity)}
+                  </p>
+                </div>
+
                 <hr className="my-3 border-gray-200 dark:border-gray-800" />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Quantity : {currenySymbol(productObj?.productId?.quantity)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Total Requirements : {data?.totalSellerCount}
+                  </p>
+
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
+                    Creation Date :{' '}
+                    {new Date(productObj?.productId?.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+
                 <hr className="my-3 border-gray-200 dark:border-gray-800" />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
-                  Total Requirements : {data?.totalSellerCount}
-                </p>
-                <hr className="my-3 border-gray-200 dark:border-gray-800" />
-                <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
-                  Creation Date : {new Date(productObj?.productId?.createdAt).toLocaleDateString()}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                    Category : {productObj?.productId?.categoryId?.categoryName || 'N/A'}
+                  </p>
+
+                  <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
+                    Sub Category : {productObj?.productId?.subCategoryId?.name || 'N/A'}
+                  </p>
+                </div>
+
+                {hasPaymentDetails && (
+                  <div>
+                    <p className="text-lg font-semibold mb-5 text-gray-900 dark:text-white mt-5 underline">
+                      Payment Details
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2">
+                        Category : {productObj?.productId?.categoryId?.categoryName || 'N/A'}
+                      </p>
+
+                      <p className="text-md font-semibold text-gray-900  rounded-md dark:text-white capitalize  bg-gray-100 dark:bg-gray-800 inline-block p-2 ">
+                        Sub Category : {productObj?.productId?.subCategoryId?.name || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+
         <hr className="my-3 border-gray-200 dark:border-gray-800" />
         {/* table */}
         {/* <form
@@ -212,7 +287,12 @@ const RequirementById = () => {
                             />
                           </div>
                           <div>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            <span
+                              onClick={() => {
+                                userDetails(entry?.sellerId?._id);
+                              }}
+                              className="  border-orange-300 border-b-[1px] cursor-pointer font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3"
+                            >
                               {entry.sellerId.firstName || ''} {entry.sellerId.lastName || ''}
                             </span>
                           </div>
@@ -232,7 +312,12 @@ const RequirementById = () => {
                             />
                           </div>
                           <div>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            <span
+                              onClick={() => {
+                                userDetails(data?.requirement?.buyerId?._id);
+                              }}
+                              className="border-orange-300 border-b-[1px] cursor-pointer font-medium text-gray-800 text-theme-sm dark:text-white/90 flex items-center gap-3"
+                            >
                               {data?.requirement?.buyerId.firstName || ''}{' '}
                               {data?.requirement?.buyerId.lastName || ''}
                             </span>
