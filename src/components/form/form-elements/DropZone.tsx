@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 type Props={
   file:File | null,
-  setFile:React.Dispatch<React.SetStateAction<File  | null>>
+  setFile:React.Dispatch<React.SetStateAction<File  | null>> | null
 }
 
 const DropzoneComponent: React.FC<Props> = ({setFile,file}) => {
