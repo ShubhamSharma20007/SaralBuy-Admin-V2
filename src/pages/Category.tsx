@@ -29,6 +29,13 @@ const Category = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
   const [text, setText] = useState<string>('');
 
+const clear = () => {
+  setText('');
+  setSelectedSubCategory(null);
+  setSelectedCategory('');
+  setSubCategories([]);
+};
+
   const handleSelectChange = (value: string) => {
     setSelectedCategory(value);
     setSubCategories([]);
@@ -89,19 +96,26 @@ const Category = () => {
       setSubCategories(updateCategoryData?.subCategories);
       setText('');
       setSelectedSubCategory(null); 
+
     }
   }, [updateCategoryData]);
 
+ 
+
   return (
-    <div className="w-full sm:h-[calc(100vh-150px)] flex justify-center items-center">
+    <div className="w-full  flex justify-center items-center">
       <ComponentCard title="Update Category" className="mx-auto sm:w-1/2">
         <form ref={formRef} onSubmit={handleSubmit} className="grid space-y-6">
           <div>
-            <Label>Categories</Label>
+           <div className='flex justify-between items-center'>
+             <Label>Categories</Label>
+             <small onClick={clear} className='block cursor-pointer'>Clear</small>
+           </div>
             <Select
               options={categories}
               placeholder="Select a Category..."
               onChange={handleSelectChange}
+               value={selectedCategory}  
               className="dark:bg-dark-900"
             />
           </div>
