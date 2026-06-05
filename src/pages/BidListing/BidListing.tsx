@@ -275,7 +275,7 @@ const BidListing = () => {
                     key={index}
                     onClick={() => setPage(num as number)}
                     className={`relative inline-flex items-center dark:text-white px-4 py-2 text-sm font-semibold ${
-                      page === num ? 'bg-indigo-500 text-white' : 'text-gray-700 hover:bg-gray-50'
+                       page === num ? 'bg-indigo-500 text-white' : ' text-gray-700 dark:hover:bg-gray-500'
                     }`}
                   >
                     {num}

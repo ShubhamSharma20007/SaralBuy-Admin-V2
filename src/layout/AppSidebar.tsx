@@ -62,6 +62,11 @@ const navItems: NavItem[] = [
     path: '/requirement',
     activeFor: ['/product-requirement'],
   },
+   {
+    icon: <BoxCubeIcon />,
+    name: 'Categories',
+    path: '/categories',
+  },
 ];
 
 const othersItems: NavItem[] = [

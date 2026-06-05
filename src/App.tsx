@@ -34,6 +34,7 @@ import Requirement from './pages/Requirement/Requirement';
 import RequirementById from './pages/Requirement/RequirementById';
 import SpinnerLoader from './common/SpinnerLoader';
 import Bucket from './pages/Bucket';
+import Category from './pages/Category';
 const Home = lazy(() => import('./pages/Dashboard/Home'));
 const BannerBucket = lazy(() => import('./pages/S3Bucket/BannerBucket'));
 const BannerListing = lazy(() => import('./pages/S3Bucket/BannerListing'));
@@ -126,6 +127,7 @@ export default function App() {
             <Route path="/bid-listing-by-product/:id" element={<BidListingByProduct />} />
             <Route path="/requirement" element={<Requirement />} />
             <Route path="/product-requirement/:id" element={<RequirementById />} />
+            <Route path="/categories" element={<Category />} />
           </Route>
 
           <Route
