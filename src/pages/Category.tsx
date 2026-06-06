@@ -15,6 +15,8 @@ import { AnalyticsInstance } from '@/service/analytics.service';
 import { Check, Edit } from 'lucide-react';
 import Input from '@/components/form/input/InputField';
 import categoriesService from '@/service/categories.service';
+import CategoryUpdateCard from '@/components/UserProfile/CategoryUpdateCard';
+import { useModal } from '@/hooks/useModal';
 
 type Category = { _id: string; label: string; value: string };
 type SubCategory = { _id: string; name: string };
@@ -25,14 +27,17 @@ const Category = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
   const [subCategories, setSubCategories] = React.useState<SubCategory[]>([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
   const [text, setText] = useState<string>('');
 
+   const { isOpen, openModal, closeModal } = useModal();
 const clear = () => {
   setText('');
   setSelectedSubCategory(null);
   setSelectedCategory('');
+  setSelectedCategoryName('')
   setSubCategories([]);
 };
 
@@ -41,6 +46,7 @@ const clear = () => {
     setSubCategories([]);
     setSelectedSubCategory(null);
     const findCategory = data.find((item: any) => item._id === value);
+    setSelectedCategoryName(findCategory?.categoryName || '');
     setSubCategories(
       findCategory?.subCategories.map((item: any) => ({
         _id: item._id,
@@ -87,6 +93,7 @@ const clear = () => {
       return;
     }
     if (updateCategoryLoading) return;
+    setSelectedSubCategory(null); 
     await updateCategoryfn(updateState);
   };
 
@@ -95,7 +102,7 @@ const clear = () => {
       toast.success('Category Updated Successfully');
       setSubCategories(updateCategoryData?.subCategories);
       setText('');
-      setSelectedSubCategory(null); 
+    
 
     }
   }, [updateCategoryData]);
@@ -103,13 +110,22 @@ const clear = () => {
  
 
   return (
+       <>
     <div className="w-full  flex justify-center items-center">
+        <CategoryUpdateCard isOpen={isOpen} openModal={openModal} closeModal={closeModal} category={{selectedCategory,selectedCategoryName}}/>
       <ComponentCard title="Update Category" className="mx-auto sm:w-1/2">
         <form ref={formRef} onSubmit={handleSubmit} className="grid space-y-6">
           <div>
-           <div className='flex justify-between items-center'>
+           <div className='flex justify-between items-center mb-2'>
              <Label>Categories</Label>
-             <small onClick={clear} className='block cursor-pointer'>Clear</small>
+             <div className='flex items-center gap-2'>
+                {/* <small onClick={()=>{
+                  if(!selectedCategory) return;
+                  openModal()
+                }} className={` flex w-full items-center justify-center rounded-full border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto ${ !selectedCategory  ? 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-800'
+                  : 'cursor-pointer'}`}>Update Category</small> */}
+                <small onClick={clear} className=' cursor-pointer flex w-full items-center justify-center rounded-full border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto'>Clear</small>
+             </div>
            </div>
             <Select
               options={categories}
@@ -203,6 +219,7 @@ const clear = () => {
         </form>
       </ComponentCard>
     </div>
+       </>
   );
 };
 
