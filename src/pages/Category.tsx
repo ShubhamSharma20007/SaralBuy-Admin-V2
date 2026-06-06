@@ -99,6 +99,19 @@ const clear = () => {
 
   useEffect(() => {
     if (updateCategoryData) {
+      if(updateCategoryData?.categoryName){
+        setCategories((prev: any) =>
+            prev.map((item: any) =>
+              item.value === updateCategoryData?._id
+                ? { ...item, label: updateCategoryData?.categoryName }
+                : item
+            )
+          )
+        
+        setSelectedCategory(updateCategoryData?._id);
+        setSelectedCategoryName(updateCategoryData?.categoryName);
+        }
+        
       toast.success('Category Updated Successfully');
       setSubCategories(updateCategoryData?.subCategories);
       setText('');
@@ -107,23 +120,31 @@ const clear = () => {
     }
   }, [updateCategoryData]);
 
+
+  const updateCategoryName = async (payload:any)=>{
+   let res ={categoryId: payload.categoryId || selectedCategory, categoryName: payload.categoryName}
+    await  updateCategoryfn(res)
+    closeModal()
+
+  }
+
  
 
   return (
        <>
     <div className="w-full  flex justify-center items-center">
-        <CategoryUpdateCard isOpen={isOpen} openModal={openModal} closeModal={closeModal} category={{selectedCategory,selectedCategoryName}}/>
+        <CategoryUpdateCard isOpen={isOpen} openModal={openModal} closeModal={closeModal} category={{selectedCategory,selectedCategoryName}} updateCategoryNameFn={updateCategoryName} loading={updateCategoryLoading}/>
       <ComponentCard title="Update Category" className="mx-auto sm:w-1/2">
         <form ref={formRef} onSubmit={handleSubmit} className="grid space-y-6">
           <div>
            <div className='flex justify-between items-center mb-2'>
              <Label>Categories</Label>
              <div className='flex items-center gap-2'>
-                {/* <small onClick={()=>{
+                 <small onClick={()=>{
                   if(!selectedCategory) return;
                   openModal()
                 }} className={` flex w-full items-center justify-center rounded-full border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto ${ !selectedCategory  ? 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-800'
-                  : 'cursor-pointer'}`}>Update Category</small> */}
+                  : 'cursor-pointer'}`}>Update Category</small> 
                 <small onClick={clear} className=' cursor-pointer flex w-full items-center justify-center rounded-full border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto'>Clear</small>
              </div>
            </div>

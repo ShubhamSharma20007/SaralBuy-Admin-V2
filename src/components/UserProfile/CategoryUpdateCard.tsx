@@ -3,13 +3,14 @@ import Button from '../ui/button/Button';
 import Input from '../form/input/InputField';
 import Label from '../form/Label';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
-export default function CategoryUpdateCard({isOpen, closeModal,category}:any) {
+export default function CategoryUpdateCard({isOpen, closeModal,category,updateCategoryNameFn,loading}:any) {
 
   // const{fn,data,loading}= useFetch(UserServiceInstance.updateUser)
 
   const [formData, setFormData] = useState({
-    categoryId:category?.selectedCategory || '',
+    categoryId:category?.selectedCategory|| '',
     categoryName    : '',
   });
 
@@ -22,6 +23,18 @@ export default function CategoryUpdateCard({isOpen, closeModal,category}:any) {
   };
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if(formData.categoryName?.trim()?.length < 3){
+      toast.error('Category name should be at least 3 characters')
+      return
+    }
+    updateCategoryNameFn(formData)
+    //reset
+    setTimeout(()=>{
+      setFormData({
+      categoryId:'',
+      categoryName    : '',
+    })
+    },1000)
    
   }
 
@@ -68,10 +81,10 @@ export default function CategoryUpdateCard({isOpen, closeModal,category}:any) {
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button type='button' size="sm" variant="outline" onClick={closeModal}>
                 Close
               </Button>
-              {/* <Button size="sm">{loading ? 'Save Changes...' : 'Save Changes'}</Button> */}
+              <Button type='submit' size="sm">{loading ? 'Save Changes...' : 'Save Changes'}</Button>
             </div>
           </form>
         </div>
