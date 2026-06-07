@@ -32,7 +32,7 @@ export default function FormElements() {
           <CheckboxComponents />
           <RadioButtons />
           <ToggleSwitch />
-          <DropzoneComponent setFile={null} file={null}/>
+          <DropzoneComponent setFile={null} file={null} />
         </div>
       </div>
     </div>

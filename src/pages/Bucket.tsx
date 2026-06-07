@@ -15,14 +15,13 @@ const Bucket = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [endpoint, setEndpoint] = React.useState('');
 
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!file) {
       toast.info('Please select a Banner');
       return;
     }
-    console.log(file)
+    console.log(file);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -31,8 +30,8 @@ const Bucket = () => {
 
   useEffect(() => {
     if (data) {
-      console.log(data)
-      setEndpoint(data?.url || '')
+      console.log(data);
+      setEndpoint(data?.url || '');
       toast.success('Image uploaded successfully');
       setFile(null);
       formRef.current?.reset();
@@ -44,9 +43,7 @@ const Bucket = () => {
       <ComponentCard title="Image Bucket" className="mx-auto sm:w-1/2 ">
         <form ref={formRef} onSubmit={handleSubmit} className="grid space-y-6">
           <DropzoneComponent setFile={setFile} file={file} />
-          <Label>
-            Image Link
-          </Label>
+          <Label>Image Link</Label>
           <div className="flex justify-between items-center gap-2">
             <Input
               type="url"
@@ -60,9 +57,9 @@ const Bucket = () => {
             <Button
               variant="outline"
               size="sm"
-              type='button'
+              type="button"
               onClick={() => {
-                if(!data) return;
+                if (!data) return;
                 navigator.clipboard.writeText(endpoint);
                 toast.success('Link copied');
               }}
