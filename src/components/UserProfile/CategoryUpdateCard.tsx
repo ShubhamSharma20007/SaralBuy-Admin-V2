@@ -27,6 +27,10 @@ export default function CategoryUpdateCard({isOpen, closeModal,category,updateCa
       toast.error('Category name should be at least 3 characters')
       return
     }
+    if(formData.categoryName?.trim() === category.selectedCategoryName?.trim()){
+      toast.error('Category name should be different')
+      return
+    }
     updateCategoryNameFn(formData)
     //reset
     setTimeout(()=>{
