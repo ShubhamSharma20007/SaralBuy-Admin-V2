@@ -12,6 +12,19 @@ import categoriesService from '@/service/categories.service';
 import CategoryUpdateCard from '@/components/UserProfile/CategoryUpdateCard';
 import { useModal } from '@/hooks/useModal';
 import AddCategoryCard from '@/components/UserProfile/AddCategoryCard';
+import { TrashBinIcon } from '@/icons';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 type Category = { _id: string; label: string; value: string };
 type SubCategory = { _id: string; name: string };
@@ -28,6 +41,11 @@ const Category = () => {
     data: createSubCategoryData,
     loading: createSubCategoryLoading,
   } = useFetch(categoriesService.createSubCategory);
+  const {
+    fn: deleteSubCategoryFn,
+    data: deleteSubCategoryData,
+    loading: deleteSubCategoryLoading,
+  } = useFetch(categoriesService.deleteSubCategory);
   const formRef = useRef<HTMLFormElement>(null);
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -36,6 +54,8 @@ const Category = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
   const [text, setText] = useState<string>('');
   const [clicking, setClicking] = useState<'add' | 'update' | ''>('');
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+  const [selectedCategoryDeleteId, setSelectedCategoryDeleteId] = useState<string | null>(null);
 
   const { isOpen, openModal, closeModal } = useModal();
   const clear = () => {
@@ -152,8 +172,43 @@ const Category = () => {
     }
   }, [createSubCategoryData]);
 
+  // dete subcategory
+  const deleteSubCategory = async (categoryId: any, subCategoryId: any) => {
+    if (deleteSubCategoryLoading) return;
+    await deleteSubCategoryFn({ categoryId, subCategoryId });
+  };
+  useEffect(() => {
+    if (deleteSubCategoryData) {
+      toast.success('Sub Category Deleted Successfully');
+      setSubCategories(deleteSubCategoryData?.subCategories);
+      setOpenDeleteConfirm(false);
+    }
+  }, [deleteSubCategoryData]);
+
   return (
     <>
+      <AlertDialog open={openDeleteConfirm} onOpenChange={setOpenDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your account and remove
+              your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (!selectedCategoryDeleteId) return console.error('no sub category id found');
+                await deleteSubCategory(selectedCategory, selectedCategoryDeleteId);
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="w-full  flex justify-center items-center">
         {clicking === 'update' && (
           <CategoryUpdateCard
@@ -269,31 +324,46 @@ const Category = () => {
                           </TableCell>
 
                           <TableCell className="px-5 py-4">
-                            {selectedSubCategory?._id === subCategory._id ? (
+                            <div className="flex gap-2 items-center">
+                              {selectedSubCategory?._id === subCategory._id ? (
+                                <div
+                                  title="Check"
+                                  onClick={() => {
+                                    updateCategory({
+                                      categoryId: selectedCategory,
+                                      subCategory: {
+                                        _id: selectedSubCategory?._id,
+                                        name: text || selectedSubCategory?.name,
+                                      },
+                                    });
+                                  }}
+                                  className="flex w-full items-center justify-center rounded-full border border-gray-300 bg-white p-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </div>
+                              ) : (
+                                <div
+                                  title="Edit"
+                                  onClick={() => {
+                                    handleSubCategorySelect(subCategory);
+                                  }}
+                                  className="flex w-full items-center justify-center rounded-full border border-gray-300 bg-white p-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </div>
+                              )}
                               <div
+                                title="Delete"
                                 onClick={() => {
-                                  updateCategory({
-                                    categoryId: selectedCategory,
-                                    subCategory: {
-                                      _id: selectedSubCategory?._id,
-                                      name: text || selectedSubCategory?.name,
-                                    },
-                                  });
+                                  setOpenDeleteConfirm(true);
+                                  // deleteSubCategory(selectedCategory,subCategory?._id);
+                                  setSelectedCategoryDeleteId(subCategory?._id);
                                 }}
                                 className="flex w-full items-center justify-center rounded-full border border-gray-300 bg-white p-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
                               >
-                                <Check className="w-4 h-4" />
+                                <TrashBinIcon className="w-4 h-4" />
                               </div>
-                            ) : (
-                              <div
-                                onClick={() => {
-                                  handleSubCategorySelect(subCategory);
-                                }}
-                                className="flex w-full items-center justify-center rounded-full border border-gray-300 bg-white p-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </div>
-                            )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

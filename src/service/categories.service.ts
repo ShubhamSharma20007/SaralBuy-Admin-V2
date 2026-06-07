@@ -13,5 +13,10 @@ class CategoryService {
   async createSubCategory(payload: any) {
     return axiosInstance.post('/categories/', payload).then(res => res.data?.data || res.data);
   }
+  async deleteSubCategory(payload: { categoryId: string; subCategoryId: string }) {
+    return axiosInstance
+      .delete('/categories/', { data: payload })
+      .then(res => res.data?.data || res.data);
+  }
 }
 export default new CategoryService();
